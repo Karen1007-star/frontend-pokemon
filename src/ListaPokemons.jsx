@@ -1,15 +1,8 @@
-import { useEffect } from "react";
-import handleEditar from "./EditarPokemon";
+// import { useEffect } from "react";
+import handleEditar from "./EditarPokemon.js";
 import EliminarPokemon from "./EliminarPokemon";
 
 function ListaPokemons({ pokemons, setPokemons }) {
-  useEffect(() => {
-    fetch("http://localhost:4000/pokemons")
-      .then(res => res.json())
-      .then(data => setPokemons(data))
-      .catch(err => console.error(err));
-  }, [setPokemons]);
-
   return (
     <div >
       <h2>Pokédex</h2>

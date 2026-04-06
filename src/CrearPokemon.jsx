@@ -16,7 +16,7 @@ function CrearPokemon({ setPokemons }) {
       })
       .then(data => {
         const imagen = data.sprites.front_default;
-        const tipo = data.types.map(t => t.type.name); // ⚡ array plano
+        const tipo = data.types.map(t => t.type.name); 
 
         return fetch("http://localhost:4000/pokemons", {
           method: "POST",
@@ -43,7 +43,7 @@ function CrearPokemon({ setPokemons }) {
         type="text"
         placeholder="Nombre"
         value={name}
-        onChange={e => setName(e.target.value)}
+        onChange={e => setName(e.target.value)} // Se usa para hacer validacion de formulario
       />
       <button onClick={crearPokemon}>Guardar</button>
     </div>
