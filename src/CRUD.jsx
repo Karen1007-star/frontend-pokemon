@@ -7,8 +7,11 @@ function CRUD(){
 // GET
   useEffect(()=>{
         fetch("http://localhost:4000/pokemonsCopy")
-        .then(res => res.json())
-        .then(data => setPokemons(data));
+        .then(res => res.json()) // RESPUESTA DEL SERVIDOR, es para que JS lo entienda
+        .then(data =>{
+          setPokemons(data) // los pokemons que llegaron se actualizan en el estado
+        }) 
+        .catch(err=>console.log("salio error al cargar"))
   },[])
 
 // POST
@@ -20,28 +23,34 @@ function CRUD(){
 
     fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)
       .then(res => {
-        if (!res.ok) throw new Error("Pokemon no encontrado");
+            // la respuesta del HTTP - ok es un valor booleano(200, 400,404,etc)
+        if (!res.ok) throw new Error("Pokemon no encontrado"); // lanza el error y deten el flujo
+                //si todo sale bien, convierte la respuesta a JSON
         return res.json();
       })
       .then(data => {
-        const imagen = data.sprites.front_default;
+        const imagen = 
+          data.sprites.other?.["official-artwork"]?.front_default ||
+          data.sprites.front_default ||
+          "https://via.placeholder.com/150"
         const type = data.types.map(t => t.type.name); 
 
         return fetch("http://localhost:4000/pokemonsCopy", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({name, imagen, type })
+          headers: { "Content-Type": "application/json" }, // EStoy enviado tipo JSON
+          body: JSON.stringify({name, imagen, type }) // ahora lo convierto a texto JSON
         });
       })
-      .then(res => res.json())
+      .then(res => res.json()) // recibe la respuesta del backend y la convierte a JS
       .then(pokemonCreado => {
         setPokemons(prev => [...prev, pokemonCreado]);
         setName("");
-        alert("Pokemon creado 🔥");
+        alert("Pokemon creado");
       })
       .catch(err => {
         console.error(err);
         alert("Error creando pokemon ❌");
+        setName("");
       });
   };
   
@@ -54,11 +63,14 @@ const editarPokemon = (pokemon)=>{
   fetch(`https://pokeapi.co/api/v2/pokemon/${nuevoNombre.toLowerCase()}`)
     .then(res => {
       if (!res.ok) throw new Error("Pokemon no encontrado");
-      return res.json();
+      return res.json(); // SE OBTIENE EL OBJETO COMPLETO DEL POKEMON
     })
     .then(data => {
-      const imagen = data.sprites.front_default;
-      const type = data.types.map(t => t.type.name);
+        const imagen = 
+          data.sprites.other?.["official-artwork"]?.front_default ||
+          data.sprites.front_default ||
+          "https://via.placeholder.com/150"; 
+        const type = data.types.map(t => t.type.name);
 
       return fetch(`http://localhost:4000/pokemonsCopy/${pokemon.num}`, {
         method: "PUT",
@@ -68,9 +80,8 @@ const editarPokemon = (pokemon)=>{
     })
     .then(res => res.json())
     .then(pokemonActualizado => {
-      setPokemons(prev =>
-        prev.map(p => (p.num === pokemon.num ? pokemonActualizado : p))
-      );
+                  // estado anterior
+      setPokemons(prev =>prev.map(p => (p.num === pokemon.num ? pokemonActualizado : p)));
       alert("Pokemon actualizado");
     })
     .catch(err => {
@@ -80,11 +91,11 @@ const editarPokemon = (pokemon)=>{
 }
 
 // DELETE
-    const eliminar = (index) => {
+    const eliminar = (pokemon) => {
     const confirmar = window.confirm("¿Seguro que quieres eliminar este Pokémon?");
     if (!confirmar) return;
 
-    fetch(`http://localhost:4000/pokemonsCopy/${index}`, {
+    fetch(`http://localhost:4000/pokemonsCopy/${pokemon.num}`, {
         method: "DELETE",
     })
         .then(res => {
@@ -120,12 +131,16 @@ return(
                 key={p.num} 
                 className="bg-white rounded-xl shadow-md p-4 mb-4 flex flex-col items-center hover:shadow-lg transition"
               >
-              {p.name}
+              {/* {p.nombre} */}
             <img src={p.imagen} alt={p.name} />
-            <p>{p.type?.join(", ")}</p>
+            <p>
+              {Array.isArray(p.type)? p.type.join(", "): p.type
+                  ? [p.type].join(", ")
+                  : ""}
+            </p>
             <div className="flex gap-2 mt-2">
               <button className="bg-slate-900 rounded px-2"
-              onClick={() => eliminar(index)}>❌</button>
+              onClick={() => eliminar(p)}>❌</button>
               <button className="bg-slate-900 text-white font-bold rounded px-2"
               onClick={() => editarPokemon(p)}>Editar</button>
             </div>
