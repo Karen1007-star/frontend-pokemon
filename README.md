@@ -5,6 +5,9 @@ Aplicación web desarrollada con React para gestionar una lista de Pokémon medi
 Este proyecto permite visualizar, crear, editar y eliminar Pokémon desde una interfaz web. El frontend se conecta con un backend desarrollado en Node.js y Express, y también consulta la PokeAPI para obtener información como imagen y tipo del Pokémon.
 
 ---
+## Captura del proyecto
+
+![Vista del proyecto](./public/Screenshot_pokemonFrontend.png)
 
 ## Tecnologías utilizadas
 
